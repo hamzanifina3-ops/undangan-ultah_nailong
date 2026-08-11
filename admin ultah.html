@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Undangan Digital Ulang Tahun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .nav-active { background-color: #FCE7F3; color: #DB2777; font-weight: 600; }
+        .hidden-section { display: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-pink-50">
+
+<div class="flex min-h-screen">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white shadow-md flex flex-col">
+        <div class="p-6 border-b border-pink-100">
+            <h1 class="text-2xl font-bold text-pink-600 flex items-center gap-2">
+                <i class="fas fa-birthday-cake"></i> BirthdayInvite
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Admin Dashboard</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchTab('create')" id="nav-create" class="nav-active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 transition-colors">
+                <i class="fas fa-pen-to-square"></i> Buat Undangan
+            </button>
+            <button onclick="switchTab('share')" id="nav-share" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 hover:bg-pink-50 transition-colors text-gray-600">
+                <i class="fas fa-share-nodes"></i> Sebar Undangan
+            </button>
+            <button onclick="switchTab('guests')" id="nav-guests" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 hover:bg-pink-50 transition-colors text-gray-600">
+                <i class="fas fa-users"></i> Daftar Tamu
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        
+        <!-- SECTION 1: BUAT UNDANGAN -->
+        <section id="section-create" class="fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">✍️ Setup Undangan Digital</h2>
+            
+            <!-- Card 1: Info Acada & Thumbnail -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span class="bg-pink-100 text-pink-600 w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
+                    Informasi Acara & Thumbnail
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Nama yang Berulang Tahun</label>
+                            <input type="text" id="birthdayName" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="Contoh: Budi Santoso" value="Budi Santoso">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Tanggal</label>
+                                <input type="date" id="eventDate" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600 mb-1">Waktu</label>
+                                <input type="time" id="eventTime" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Lokasi Acara</label>
+                            <input type="text" id="eventLocation" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="Contoh: Ballroom Hotel Mulia" value="Ballroom Hotel Mulia">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-1">Link Google Maps</label>
+                            <input type="text" id="eventMaps" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="https://maps.app.goo.gl/..." value="https://maps.app.goo.gl/abc123">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600 mb-1">Thumbnail (Preview WA/Sosmed)</label>
+                        <div id="thumbContainer" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-pink-50 transition-colors" onclick="document.getElementById('thumbInput').click()">
+                            <div id="thumbPlaceholder" class="py-8 flex flex-col items-center justify-center text-gray-400">
+                                <i class="fas fa-cloud-arrow-up text-4xl mb-2"></i>
+                                <p class="text-sm">Klik untuk upload (1200x630 px)</p>
+                                <p class="text-xs mt-1 text-gray-400">Akan muncul saat link dibagikan</p>
+                            </div>
+                            <img id="thumbPreview" class="hidden w-full rounded-lg" src="" alt="Thumbnail">
+                            <input type="file" id="thumbInput" accept="image/*" class="hidden" onchange="previewThumbnail(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Caption -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span class="bg-pink-100 text-pink-600 w-7 h-7 rounded-full flex items-center justify-center text-sm">2</span>
+                    Caption & Ucapan
+                </h3>
+                <textarea id="captionText" rows="5" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="Tulis caption...">Halo [Nama Tamu]! 🎉
+
+Kamu diundang untuk merayakan pesta ulang tahun Budi. Kehadiran kamu akan sangat berarti bagi kami. 
+
+Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
+                <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                    <button onclick="insertTag('[Nama Tamu]')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-600">+ Sisipkan Nama Tamu</button>
+                    <button onclick="insertTag('[Tanggal]')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-600">+ Sisipkan Tanggal</button>
+                    <button onclick="insertTag('[Lokasi]')" class="bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full text-gray-600">+ Sisipkan Lokasi</button>
+                </div>
+            </div>
+
+            <!-- Card 3: Daftar Tamu -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <span class="bg-pink-100 text-pink-600 w-7 h-7 rounded-full flex items-center justify-center text-sm">3</span>
+                    Daftar Nama Undangan
+                </h3>
+                <textarea id="guestListInput" rows="4" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none" placeholder="Tempel daftar nama di sini, pisahkan dengan koma atau baris baru (enter).&#10;Contoh:&#10;Andi,&#10;Budi,&#10;Citra">Andi, Budi, Citra, Dina, Eka</textarea>
+                <button onclick="processGuests()" class="mt-2 bg-pink-100 text-pink-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-pink-200 transition-colors">
+                    <i class="fas fa-list-check mr-1"></i> Proses Daftar Tamu
+                </button>
+                <div id="guestListDisplay" class="mt-4 flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Action Button -->
+            <button onclick="saveAndGenerate()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg hover:from-pink-600 hover:to-rose-600 transition-all">
+                💾 Simpan & Generate Link Undangan
+            </button>
+        </section>
+
+        <!-- SECTION 2: SEBAR UNDANGAN -->
+        <section id="section-share" class="hidden-section fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">📢 Sebarkan Undangan</h2>
+            
+            <!-- Card Preview OG / WA -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Preview Tampilan di WhatsApp</h3>
+                <div class="max-w-sm border border-gray-100 rounded-lg p-3 bg-gray-50">
+                    <img id="ogPreviewImage" src="https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan" class="w-full h-32 object-cover rounded-md mb-2" alt="OG Image">
+                    <div class="text-xs text-gray-500">undang.digital/ultah-budi</div>
+                    <div class="font-semibold text-gray-800 text-sm" id="ogPreviewTitle">Undangan Ulang Tahun Budi</div>
+                    <div class="text-xs text-gray-600 mt-1" id="ogPreviewDesc">Kamu diundang! Klik untuk melihat detail...</div>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">* Thumbnail dan judul akan otomatis terbaca saat link ditempel di WhatsApp atau Sosial Media.</p>
+            </div>
+
+            <!-- Card Share Link -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Bagikan Link</h3>
+                <div class="flex gap-2">
+                    <input type="text" id="generatedLink" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none" readonly value="https://undang.digital/budi-ultah-2024">
+                    <button onclick="copyLink()" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-copy mr-1"></i> Salin
+                    </button>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button onclick="shareToWA()" class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
+                        <i class="fab fa-whatsapp text-xl"></i> Bagikan ke WhatsApp
+                    </button>
+                    <button onclick="shareToFB()" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
+                        <i class="fab fa-facebook text-xl"></i> Facebook
+                    </button>
+                    <button class="bg-sky-400 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-sky-500 transition-colors">
+                        <i class="fab fa-twitter text-xl"></i> Twitter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card Broadcast WA -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Sebar Personal ke Tamu (WhatsApp)</h3>
+                <p class="text-sm text-gray-500 mb-4">Klik tombol di bawah untuk mengirim pesan personal melalui WhatsApp. Sistem akan mengganti <b>[Nama Tamu]</b> menjadi nama masing-masing tamu secara otomatis.</p>
+                
+                <div class="space-y-2 max-h-60 overflow-y-auto border border-gray-100 rounded-lg p-4 mb-4" id="broadcastList">
+                    <!-- Diisi oleh JS -->
+                </div>
+                
+                <button onclick="broadcastAll()" class="w-full bg-green-500 text-white font-semibold py-3 rounded-xl hover:bg-green-600 transition-colors">
+                    <i class="fab fa-whatsapp mr-2"></i> Kirim ke Semua Tamu via WhatsApp
+                </button>
+                <p class="text-xs text-gray-400 mt-2 text-center">* Akan membuka aplikasi WhatsApp Web/Mobile satu per satu untuk setiap tamu.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: DAFTAR TAMU -->
+        <section id="section-guests" class="hidden-section fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">👥 Manajemen Daftar Tamu</h2>
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="py-3 px-4 text-gray-600 font-medium">No</th>
+                            <th class="py-3 px-4 text-gray-600 font-medium">Nama Tamu</th>
+                            <th class="py-3 px-4 text-gray-600 font-medium">Status Kirim</th>
+                            <th class="py-3 px-4 text-gray-600 font-medium">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guestTableBody">
+                        <!-- Diisi oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // Data Sementara (State)
+    let guests = [];
+
+    // Fungsi Navigasi Tab
+    function switchTab(tab) {
+        document.getElementById('section-create').classList.add('hidden-section');
+        document.getElementById('section-share').classList.add('hidden-section');
+        document.getElementById('section-guests').classList.add('hidden-section');
+
+        document.getElementById('nav-create').classList.remove('nav-active');
+        document.getElementById('nav-share').classList.remove('nav-active');
+        document.getElementById('nav-guests').classList.remove('nav-active');
+        
+        // Reset color
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.classList.add('text-gray-600');
+            btn.classList.remove('nav-active');
+        });
+
+        if(tab === 'create') {
+            document.getElementById('section-create').classList.remove('hidden-section');
+            document.getElementById('nav-create').classList.add('nav-active');
+        } else if(tab === 'share') {
+            document.getElementById('section-share').classList.remove('hidden-section');
+            document.getElementById('nav-share').classList.add('nav-active');
+            renderBroadcastList();
+        } else if(tab === 'guests') {
+            document.getElementById('section-guests').classList.remove('hidden-section');
+            document.getElementById('nav-guests').classList.add('nav-active');
+            renderGuestTable();
+        }
+    }
+
+    // Fungsi Thumbnail Preview
+    function previewThumbnail(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('thumbPreview').src = e.target.result;
+                document.getElementById('thumbPreview').classList.remove('hidden');
+                document.getElementById('thumbPlaceholder').classList.add('hidden');
+                
+                // Update OG Preview di halaman share
+                document.getElementById('ogPreviewImage').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Fungsi Sisipkan Tag Caption
+    function insertTag(tag) {
+        const textarea = document.getElementById('captionText');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + tag + text.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + tag.length, start + tag.length);
+    }
+
+    // Fungsi Proses Daftar Tamu
+    function processGuests() {
+        const input = document.getElementById('guestListInput').value;
+        // Pisahkan dengan enter atau koma
+        const names = input.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== "");
+        
+        guests = names.map(name => ({ name: name, sent: false }));
+        renderGuestChips();
+        alert(`${guests.length} tamu berhasil diproses!`);
+    }
+
+    // Render Chips Tamu di Halaman Create
+    function renderGuestChips() {
+        const container = document.getElementById('guestListDisplay');
+        container.innerHTML = '';
+        guests.forEach((guest, index) => {
+            const chip = document.createElement('div');
+            chip.className = 'bg-pink-50 text-pink-700 px-3 py-1 rounded-full text-sm flex items-center gap-2';
+            chip.innerHTML = `${guest.name} <button onclick="removeGuest(${index})" class="text-pink-400 hover:text-pink-600"><i class="fas fa-times text-xs"></i></button>`;
+            container.appendChild(chip);
+        });
+    }
+
+    // Hapus Tamu
+    function removeGuest(index) {
+        guests.splice(index, 1);
+        renderGuestChips();
+    }
+
+    // Simpan & Generate
+    function saveAndGenerate() {
+        const name = document.getElementById('birthdayName').value;
+        if(!name) {
+            alert("Nama yang berulang tahun harus diisi!");
+            return;
+        }
+        if(guests.length === 0) {
+            if(!confirm("Daftar tamu kosong. Lanjutkan menyimpan?")) return;
+        }
+        
+        // Update OG Title
+        document.getElementById('ogPreviewTitle').innerText = `Undangan Ulang Tahun ${name}`;
+        
+        // Simulasi Generate Link
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
+        document.getElementById('generatedLink').value = `https://undang.digital/${slug}-ultah`;
+        
+        alert("Undangan berhasil disimpan & link dibuat!");
+        switchTab('share');
+    }
+
+    // Render List Broadcast WA
+    function renderBroadcastList() {
+        const container = document.getElementById('broadcastList');
+        container.innerHTML = '';
+        if(guests.length === 0) {
+            container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Belum ada daftar tamu. Silakan tambah di menu Buat Undangan.</p>';
+            return;
+        }
+        guests.forEach((guest, index) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between border-b border-gray-100 pb-2';
+            div.innerHTML = `
+                <span class="text-gray-700">${guest.name}</span>
+                <button onclick="sendSingleWA(${index})" class="bg-green-100 text-green-600 px-3 py-1 rounded-lg text-xs hover:bg-green-200">
+                    <i class="fab fa-whatsapp"></i> Kirim
+                </button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Render Tabel Tamu
+    function renderGuestTable() {
+        const tbody = document.getElementById('guestTableBody');
+        tbody.innerHTML = '';
+        if(guests.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-4">Belum ada tamu.</td></tr>';
+            return;
+        }
+        guests.forEach((guest, index) => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-100 hover:bg-gray-50';
+            tr.innerHTML = `
+                <td class="py-3 px-4 text-gray-600">${index + 1}</td>
+                <td class="py-3 px-4 text-gray-800 font-medium">${guest.name}</td>
+                <td class="py-3 px-4">
+                    ${guest.sent ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Terkirim</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Pending</span>'}
+                </td>
+                <td class="py-3 px-4">
+                    <button class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fungsi Copy Link
+    function copyLink() {
+        const link = document.getElementById('generatedLink');
+        link.select();
+        document.execCommand('copy');
+        alert('Link berhasil disalin!');
+    }
+
+    // Fungsi Share WA Umum
+    function shareToWA() {
+        const link = document.getElementById('generatedLink').value;
+        const caption = document.getElementById('captionText').value.replace('[Nama Tamu]', 'Teman-teman semua');
+        const text = `${caption}\n\nLink Undangan: ${link}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // Fungsi Share FB
+    function shareToFB() {
+        const link = document.getElementById('generatedLink').value;
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+    }
+
+    // Fungsi Kirim WA Personal per Tamu
+    function sendSingleWA(index) {
+        const guest = guests[index];
+        const link = document.getElementById('generatedLink').value;
+        const personalLink = `${link}?to=${encodeURIComponent(guest.name)}`;
+        
+        const caption = document.getElementById('captionText').value;
+        const personalizedText = caption
+            .replace('[Nama Tamu]', guest.name)
+            .replace('[Tanggal]', document.getElementById('eventDate').value)
+            .replace('[Lokasi]', document.getElementById('eventLocation').value);
+            
+        const text = `${personalizedText}\n\nLink Undangan Kamu: ${personalLink}`;
+        
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        
+        guests[index].sent = true;
+        renderBroadcastList();
+    }
+
+    // Fungsi Broadcast All (Simulasi: Membuka WA secara berurutan)
+    function broadcastAll() {
+        if(guests.length === 0) {
+            alert("Daftar tamu kosong!");
+            return;
+        }
+        alert("Sistem akan membuka tab WhatsApp untuk setiap tamu. Pastikan pop-up tidak di-block browser.");
+        let i = 0;
+        const interval = setInterval(() => {
+            if(i >= guests.length) {
+                clearInterval(interval);
+                alert("Selesai!");
+                return;
+            }
+            sendSingleWA(i);
+            i++;
+        }, 1500); // Delay 1.5 detik agar tab tidak numpuk terlalu cepat
+    }
+
+    // Inisialisasi
+    document.getElementById('eventDate').value = '2024-12-24';
+    document.getElementById('eventTime').value = '19:00';
+    processGuests(); // Proses nama contoh saat load
+</script>
+
+</body>
+</html>
