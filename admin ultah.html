@@ -211,7 +211,7 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
 <script>
     // Data Sementara (State)
     let guests = [];
-    let currentThumbnail = "cuking.jpg";
+    let currentThumbnail = "https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan";
 
     // Pasang Event Listener Thumbnail
     document.getElementById('thumbInput').addEventListener('change', function(event) {
@@ -223,7 +223,7 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                 document.getElementById('thumbPreview').classList.remove('hidden');
                 document.getElementById('thumbPlaceholder').classList.add('hidden');
                 currentThumbnail = e.target.result;
-                document.getElementById('ogPreviewImage').src = currentThumbnail;
+                document.getElementById('ogPreviewImage').src = cuking.jpg;
             }
             reader.readAsDataURL(input.files[0]);
         }
