@@ -47,7 +47,7 @@
         <section id="section-create" class="fade-in">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">✍️ Setup Undangan Digital</h2>
             
-            <!-- Card 1: Info Acada & Thumbnail -->
+            <!-- Card 1: Info Acara & Thumbnail -->
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
                     <span class="bg-pink-100 text-pink-600 w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
@@ -86,8 +86,8 @@
                                 <p class="text-sm">Klik untuk upload (1200x630 px)</p>
                                 <p class="text-xs mt-1 text-gray-400">Akan muncul saat link dibagikan</p>
                             </div>
-                            <img id="thumbPreview" class="hidden w-full rounded-lg" src="" alt="Thumbnail">
-                            <input type="file" id="thumbInput" accept="image/*" class="hidden" onchange="previewThumbnail(this)">
+                            <img id="thumbPreview" class="hidden w-full rounded-lg object-cover h-48" src="" alt="Thumbnail">
+                            <input type="file" id="thumbInput" accept="image/*" class="hidden">
                         </div>
                     </div>
                 </div>
@@ -126,7 +126,7 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
 
             <!-- Action Button -->
             <button onclick="saveAndGenerate()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg hover:from-pink-600 hover:to-rose-600 transition-all">
-                💾 Simpan & Generate Link Undangan
+                💾 Simpan & Lanjut ke Sebar Undangan
             </button>
         </section>
 
@@ -139,31 +139,33 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                 <h3 class="text-lg font-semibold text-gray-700 mb-4">Preview Tampilan di WhatsApp</h3>
                 <div class="max-w-sm border border-gray-100 rounded-lg p-3 bg-gray-50">
                     <img id="ogPreviewImage" src="https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan" class="w-full h-32 object-cover rounded-md mb-2" alt="OG Image">
-                    <div class="text-xs text-gray-500">undang.digital/ultah-budi</div>
+                    <div class="text-xs text-gray-500" id="ogPreviewDomain">undang.digital/budi-ultah-2024</div>
                     <div class="font-semibold text-gray-800 text-sm" id="ogPreviewTitle">Undangan Ulang Tahun Budi</div>
                     <div class="text-xs text-gray-600 mt-1" id="ogPreviewDesc">Kamu diundang! Klik untuk melihat detail...</div>
                 </div>
-                <p class="text-xs text-gray-400 mt-2">* Thumbnail dan judul akan otomatis terbaca saat link ditempel di WhatsApp atau Sosial Media.</p>
+                <p class="text-xs text-gray-400 mt-2">* Thumbnail dan judul akan otomatis terbaca saat link asli Anda ditempel di WhatsApp.</p>
             </div>
 
-            <!-- Card Share Link -->
+            <!-- Card Share Link (Bisa Diedit) -->
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
-                <h3 class="text-lg font-semibold text-gray-700 mb-4">Bagikan Link</h3>
-                <div class="flex gap-2">
-                    <input type="text" id="generatedLink" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 outline-none" readonly value="https://undang.digital/budi-ultah-2024">
-                    <button onclick="copyLink()" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                        <i class="fas fa-copy mr-1"></i> Salin
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Masukkan & Bagikan Link</h3>
+                <p class="text-sm text-gray-500 mb-4">Tempel link undangan asli Anda di sini. Sistem akan otomatis menggunakan link ini untuk dibagikan ke WhatsApp/Sosial Media.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="generatedLink" class="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-400" value="https://undang.digital/budi-ultah-2024" oninput="updateLinkPreview(this.value)">
+                    <button onclick="copyLink()" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2">
+                        <i class="fas fa-copy"></i> Salin Link
                     </button>
                 </div>
+                
+                <p class="text-xs text-red-400 mt-2">Catatan: Pastikan link di atas sudah benar. Tempel link ini ke chat WhatsApp untuk melihat thumbnail muncul.</p>
+                
                 <div class="mt-4 flex flex-wrap gap-3">
                     <button onclick="shareToWA()" class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
                         <i class="fab fa-whatsapp text-xl"></i> Bagikan ke WhatsApp
                     </button>
                     <button onclick="shareToFB()" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors">
                         <i class="fab fa-facebook text-xl"></i> Facebook
-                    </button>
-                    <button class="bg-sky-400 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-sky-500 transition-colors">
-                        <i class="fab fa-twitter text-xl"></i> Twitter
                     </button>
                 </div>
             </div>
@@ -180,7 +182,6 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                 <button onclick="broadcastAll()" class="w-full bg-green-500 text-white font-semibold py-3 rounded-xl hover:bg-green-600 transition-colors">
                     <i class="fab fa-whatsapp mr-2"></i> Kirim ke Semua Tamu via WhatsApp
                 </button>
-                <p class="text-xs text-gray-400 mt-2 text-center">* Akan membuka aplikasi WhatsApp Web/Mobile satu per satu untuk setiap tamu.</p>
             </div>
         </section>
 
@@ -210,6 +211,23 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
 <script>
     // Data Sementara (State)
     let guests = [];
+    let currentThumbnail = "https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan";
+
+    // Pasang Event Listener Thumbnail
+    document.getElementById('thumbInput').addEventListener('change', function(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('thumbPreview').src = e.target.result;
+                document.getElementById('thumbPreview').classList.remove('hidden');
+                document.getElementById('thumbPlaceholder').classList.add('hidden');
+                currentThumbnail = e.target.result;
+                document.getElementById('ogPreviewImage').src = currentThumbnail;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    });
 
     // Fungsi Navigasi Tab
     function switchTab(tab) {
@@ -217,44 +235,25 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         document.getElementById('section-share').classList.add('hidden-section');
         document.getElementById('section-guests').classList.add('hidden-section');
 
-        document.getElementById('nav-create').classList.remove('nav-active');
-        document.getElementById('nav-share').classList.remove('nav-active');
-        document.getElementById('nav-guests').classList.remove('nav-active');
-        
-        // Reset color
         document.querySelectorAll('nav button').forEach(btn => {
-            btn.classList.add('text-gray-600');
             btn.classList.remove('nav-active');
+            btn.classList.add('text-gray-600');
         });
 
         if(tab === 'create') {
             document.getElementById('section-create').classList.remove('hidden-section');
             document.getElementById('nav-create').classList.add('nav-active');
+            document.getElementById('nav-create').classList.remove('text-gray-600');
         } else if(tab === 'share') {
             document.getElementById('section-share').classList.remove('hidden-section');
             document.getElementById('nav-share').classList.add('nav-active');
+            document.getElementById('nav-share').classList.remove('text-gray-600');
             renderBroadcastList();
         } else if(tab === 'guests') {
             document.getElementById('section-guests').classList.remove('hidden-section');
             document.getElementById('nav-guests').classList.add('nav-active');
+            document.getElementById('nav-guests').classList.remove('text-gray-600');
             renderGuestTable();
-        }
-    }
-
-    // Fungsi Thumbnail Preview
-    function previewThumbnail(input) {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('thumbPreview').src = e.target.result;
-                document.getElementById('thumbPreview').classList.remove('hidden');
-                document.getElementById('thumbPlaceholder').classList.add('hidden');
-                
-                // Update OG Preview di halaman share
-                document.getElementById('ogPreviewImage').src = e.target.result;
-            }
-            reader.readAsDataURL(file);
         }
     }
 
@@ -266,21 +265,17 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         const text = textarea.value;
         textarea.value = text.substring(0, start) + tag + text.substring(end);
         textarea.focus();
-        textarea.setSelectionRange(start + tag.length, start + tag.length);
     }
 
     // Fungsi Proses Daftar Tamu
     function processGuests() {
         const input = document.getElementById('guestListInput').value;
-        // Pisahkan dengan enter atau koma
         const names = input.split(/[\n,]+/).map(name => name.trim()).filter(name => name !== "");
-        
         guests = names.map(name => ({ name: name, sent: false }));
         renderGuestChips();
         alert(`${guests.length} tamu berhasil diproses!`);
     }
 
-    // Render Chips Tamu di Halaman Create
     function renderGuestChips() {
         const container = document.getElementById('guestListDisplay');
         container.innerHTML = '';
@@ -292,7 +287,6 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         });
     }
 
-    // Hapus Tamu
     function removeGuest(index) {
         guests.splice(index, 1);
         renderGuestChips();
@@ -301,31 +295,31 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
     // Simpan & Generate
     function saveAndGenerate() {
         const name = document.getElementById('birthdayName').value;
-        if(!name) {
-            alert("Nama yang berulang tahun harus diisi!");
-            return;
-        }
-        if(guests.length === 0) {
-            if(!confirm("Daftar tamu kosong. Lanjutkan menyimpan?")) return;
-        }
+        if(!name) { alert("Nama yang berulang tahun harus diisi!"); return; }
         
-        // Update OG Title
         document.getElementById('ogPreviewTitle').innerText = `Undangan Ulang Tahun ${name}`;
         
-        // Simulasi Generate Link
+        // Generate slug link otomatis (bisa diedit nanti di halaman share)
         const slug = name.toLowerCase().replace(/\s+/g, '-');
-        document.getElementById('generatedLink').value = `https://undang.digital/${slug}-ultah`;
+        const generatedUrl = `https://undang.digital/${slug}-ultah`;
+        document.getElementById('generatedLink').value = generatedUrl;
+        updateLinkPreview(generatedUrl);
         
-        alert("Undangan berhasil disimpan & link dibuat!");
+        alert("Data disimpan! Silakan masukkan link undangan asli Anda pada kotak input di halaman ini.");
         switchTab('share');
     }
 
-    // Render List Broadcast WA
+    // Update preview link saat diketik manual
+    function updateLinkPreview(url) {
+        let cleanUrl = url.replace(/^https?:\/\//, '');
+        document.getElementById('ogPreviewDomain').innerText = cleanUrl;
+    }
+
     function renderBroadcastList() {
         const container = document.getElementById('broadcastList');
         container.innerHTML = '';
         if(guests.length === 0) {
-            container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Belum ada daftar tamu. Silakan tambah di menu Buat Undangan.</p>';
+            container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">Belum ada daftar tamu.</p>';
             return;
         }
         guests.forEach((guest, index) => {
@@ -341,7 +335,6 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         });
     }
 
-    // Render Tabel Tamu
     function renderGuestTable() {
         const tbody = document.getElementById('guestTableBody');
         tbody.innerHTML = '';
@@ -368,13 +361,16 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
 
     // Fungsi Copy Link
     function copyLink() {
-        const link = document.getElementById('generatedLink');
-        link.select();
-        document.execCommand('copy');
-        alert('Link berhasil disalin!');
+        const linkInput = document.getElementById('generatedLink');
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            alert('Link berhasil disalin! Tempel (paste) ke WhatsApp untuk melihat thumbnail.');
+        }).catch(err => {
+            alert('Gagal menyalin otomatis, silakan copy manual (Ctrl+C).');
+        });
     }
 
-    // Fungsi Share WA Umum
     function shareToWA() {
         const link = document.getElementById('generatedLink').value;
         const caption = document.getElementById('captionText').value.replace('[Nama Tamu]', 'Teman-teman semua');
@@ -382,13 +378,11 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    // Fungsi Share FB
     function shareToFB() {
         const link = document.getElementById('generatedLink').value;
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
     }
 
-    // Fungsi Kirim WA Personal per Tamu
     function sendSingleWA(index) {
         const guest = guests[index];
         const link = document.getElementById('generatedLink').value;
@@ -403,34 +397,25 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         const text = `${personalizedText}\n\nLink Undangan Kamu: ${personalLink}`;
         
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-        
         guests[index].sent = true;
         renderBroadcastList();
     }
 
-    // Fungsi Broadcast All (Simulasi: Membuka WA secara berurutan)
     function broadcastAll() {
-        if(guests.length === 0) {
-            alert("Daftar tamu kosong!");
-            return;
-        }
+        if(guests.length === 0) { alert("Daftar tamu kosong!"); return; }
         alert("Sistem akan membuka tab WhatsApp untuk setiap tamu. Pastikan pop-up tidak di-block browser.");
         let i = 0;
         const interval = setInterval(() => {
-            if(i >= guests.length) {
-                clearInterval(interval);
-                alert("Selesai!");
-                return;
-            }
+            if(i >= guests.length) { clearInterval(interval); alert("Selesai!"); return; }
             sendSingleWA(i);
             i++;
-        }, 1500); // Delay 1.5 detik agar tab tidak numpuk terlalu cepat
+        }, 1500); 
     }
 
-    // Inisialisasi
+    // Inisialisasi Default
     document.getElementById('eventDate').value = '2024-12-24';
     document.getElementById('eventTime').value = '19:00';
-    processGuests(); // Proses nama contoh saat load
+    processGuests();
 </script>
 
 </body>
