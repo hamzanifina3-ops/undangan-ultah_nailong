@@ -80,13 +80,20 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">Thumbnail (Preview WA/Sosmed)</label>
+                        
+                        <!-- PERBAIKAN: Input URL Gambar agar bisa dibaca WhatsApp -->
+                        <div class="mb-3">
+                            <label class="text-xs text-gray-500">Tempel Link URL Gambar (https://...)</label>
+                            <input type="url" id="thumbUrl" class="w-full px-4 py-2 mt-1 border-2 border-pink-200 bg-pink-50 rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none text-sm" placeholder="https://server.com/gambar.jpg" oninput="updateThumbnailUrl(this.value)">
+                        </div>
+                        
                         <div id="thumbContainer" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-pink-50 transition-colors" onclick="document.getElementById('thumbInput').click()">
                             <div id="thumbPlaceholder" class="py-8 flex flex-col items-center justify-center text-gray-400">
                                 <i class="fas fa-cloud-arrow-up text-4xl mb-2"></i>
-                                <p class="text-sm">Klik untuk upload (1200x630 px)</p>
-                                <p class="text-xs mt-1 text-gray-400">Akan muncul saat link dibagikan</p>
+                                <p class="text-sm">Atau klik untuk upload preview lokal</p>
+                                <p class="text-xs mt-1 text-gray-400">Wajib isi Link URL di atas untuk WA</p>
                             </div>
-                            <img id="thumbPreview" class="hidden w-full rounded-lg object-cover h-48" src="" alt="Thumbnail">
+                            <img id="thumbPreview" class="hidden w-full rounded-lg object-cover h-32" src="https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan" alt="Thumbnail">
                             <input type="file" id="thumbInput" accept="image/*" class="hidden">
                         </div>
                     </div>
@@ -143,7 +150,15 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                     <div class="font-semibold text-gray-800 text-sm" id="ogPreviewTitle">Undangan Ulang Tahun Budi</div>
                     <div class="text-xs text-gray-600 mt-1" id="ogPreviewDesc">Kamu diundang! Klik untuk melihat detail...</div>
                 </div>
-                <p class="text-xs text-gray-400 mt-2">* Thumbnail dan judul akan otomatis terbaca saat link asli Anda ditempel di WhatsApp.</p>
+                
+                <!-- PERBAIKAN: Tombol Cek Cache WA -->
+                <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 text-sm text-yellow-700 rounded-r-lg">
+                    <p class="font-bold flex items-center gap-2"><i class="fas fa-triangle-exclamation"></i> Thumbnail tidak muncul di WA?</p>
+                    <p class="mt-1 mb-2">WhatsApp butuh di-refresh agar bisa membaca thumbnail. Klik tombol di bawah untuk memaksa WhatsApp mengecek ulang link & gambar Anda:</p>
+                    <button onclick="debugWhatsAppCache()" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-rotate mr-1"></i> Cek & Refresh Cache WhatsApp
+                    </button>
+                </div>
             </div>
 
             <!-- Card Share Link (Bisa Diedit) -->
@@ -157,8 +172,6 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                         <i class="fas fa-copy"></i> Salin Link
                     </button>
                 </div>
-                
-                <p class="text-xs text-red-400 mt-2">Catatan: Pastikan link di atas sudah benar. Tempel link ini ke chat WhatsApp untuk melihat thumbnail muncul.</p>
                 
                 <div class="mt-4 flex flex-wrap gap-3">
                     <button onclick="shareToWA()" class="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-600 transition-colors">
@@ -211,9 +224,21 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
 <script>
     // Data Sementara (State)
     let guests = [];
-    let currentThumbnail = "https://via.placeholder.com/400x200/FCE7F3/DB2777?text=Thumbnail+Undangan";
 
-    // Pasang Event Listener Thumbnail
+    // Fungsi update URL Thumbnail
+    function updateThumbnailUrl(url) {
+        if(url) {
+            document.getElementById('thumbPreview').src = url;
+            document.getElementById('thumbPreview').classList.remove('hidden');
+            document.getElementById('thumbPlaceholder').classList.add('hidden');
+            document.getElementById('ogPreviewImage').src = url;
+        } else {
+            document.getElementById('thumbPreview').classList.add('hidden');
+            document.getElementById('thumbPlaceholder').classList.remove('hidden');
+        }
+    }
+
+    // Event Listener Upload Lokal (Hanya untuk Preview UI)
     document.getElementById('thumbInput').addEventListener('change', function(event) {
         const input = event.target;
         if (input.files && input.files[0]) {
@@ -222,8 +247,8 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
                 document.getElementById('thumbPreview').src = e.target.result;
                 document.getElementById('thumbPreview').classList.remove('hidden');
                 document.getElementById('thumbPlaceholder').classList.add('hidden');
-                currentThumbnail = e.target.result;
-                document.getElementById('ogPreviewImage').src = cuking.jpg;
+                document.getElementById('ogPreviewImage').src = e.target.result;
+                alert("Perhatian: Gambar lokal hanya untuk preview. Agar muncul di WA, wajib tempel Link URL gambar di kotak di atas!");
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -299,14 +324,23 @@ Tunggu ya! Sampai jumpa di hari bahagia 🎂</textarea>
         
         document.getElementById('ogPreviewTitle').innerText = `Undangan Ulang Tahun ${name}`;
         
-        // Generate slug link otomatis (bisa diedit nanti di halaman share)
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         const generatedUrl = `https://undang.digital/${slug}-ultah`;
         document.getElementById('generatedLink').value = generatedUrl;
         updateLinkPreview(generatedUrl);
         
-        alert("Data disimpan! Silakan masukkan link undangan asli Anda pada kotak input di halaman ini.");
         switchTab('share');
+    }
+
+    // Fungsi Debug WA Cache
+    function debugWhatsAppCache() {
+        const link = document.getElementById('generatedLink').value;
+        if(!link || link === 'https://undang.digital/budi-ultah-2024') {
+            alert("Masukkan link undangan asli Anda terlebih dahulu di kotak input!");
+            return;
+        }
+        // Buka Facebook Sharing Debugger di tab baru
+        window.open(`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(link)}`, '_blank');
     }
 
     // Update preview link saat diketik manual
